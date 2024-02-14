@@ -140,7 +140,7 @@ const PlaygroundPage = () => {
             <textarea
               ref={inputChatBox}
               className='h-full w-full resize-none text-sm focus:outline-none'
-              placeholder={isAsking ? "Gemini is thingking" : "Ask gemini a question"}
+              placeholder={isAsking ? "Looking for the answer" : "Ask gemini a question"}
               name='question'
               onChange={handleChange}
               onKeyPress={handleKeyPress}
