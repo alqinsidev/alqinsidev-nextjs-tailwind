@@ -24,7 +24,7 @@ const geminiService = {
   },
   askGemini: async function (question: string, feParts: string[]) {
     const config =  await this.getConfig()
-    const genAI = new GoogleGenerativeAI(process.env.API_KEY || config.api_key)
+    const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GENAI_API_KEY || config.api_key)
     const model = genAI.getGenerativeModel({ model: MODEL_NAME })
 
     const generationConfig = {
