@@ -16,7 +16,7 @@ const MODEL_NAME = 'gemini-pro'
 
 const geminiService = {
   getConfig: async function (): Promise<Config> {
-    const res = await fetch(`https://alqinsidev-project-default-rtdb.asia-southeast1.firebasedatabase.app/gemini.json`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/gemini.json`)
     if (!res.ok) {
       throw new Error('Failed to fetch data')
     }

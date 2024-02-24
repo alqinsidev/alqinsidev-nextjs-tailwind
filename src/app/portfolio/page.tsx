@@ -40,7 +40,7 @@ const PortfolioPage = () => {
   }, [])
 
   async function getData() {
-    const res = await fetch('https://alqinsidev-project-default-rtdb.asia-southeast1.firebasedatabase.app/portfolio.json')
+    const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/portfolio.json`)
     if (!res.ok) {
       throw new Error('Failed to fetch data')
     }
