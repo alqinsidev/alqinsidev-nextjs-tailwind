@@ -12,8 +12,25 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: 'Padlan Alqinsi',
-  description: 'Everythings about padlan is here',
-}
+  description: "Everything about Padlan is here.",
+  metadataBase: new URL('https://alqinsidev.vercel.app'),
+  openGraph: {
+    title: 'Padlan Alqinsi',
+    description: "Everything about Padlan is here.",
+    url: 'https://alqinsidev.vercel.app',
+    siteName: 'Padlan Alqinsi',
+    images: [
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2FOG%20Image.png?alt=media&token=13af7c42-4712-4fc2-a80e-2da6dba92ae8',
+        width: 1200,
+        height: 630,
+        alt: 'Padlan Alqinsi OG Image',
+      },
+    ],
+    type: 'website',
+  },
+};
+
 
 export default function RootLayout({
   children,
