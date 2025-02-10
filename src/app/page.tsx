@@ -62,7 +62,7 @@ export default function Home() {
                 : ``
             }
             src={
-              'https://alqinsidev.netlify.app/static/media/handsome-man.688f02a9.png'
+              'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2Fhandsome-man.png?alt=media&token=30415da5-aee7-4653-94b5-8e215bc7a4ff'
             }
             height={420}
             width={420}
