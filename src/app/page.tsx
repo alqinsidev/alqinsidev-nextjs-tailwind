@@ -82,9 +82,9 @@ export default function Home() {
             initial='begin'
             animate='end'
             variants={heroSubTitleVariants}
-            className='text-md font-[400] text-gray-700 lg:text-lg'
+            className='text-md text-center font-[400] text-gray-700 lg:text-lg'
           >
-            Software Engineer, IT Enthussiast, etc
+            Crafting Code & Solving Problems – Welcome to My Tech Journey!
           </motion.h2>
         </div>
       </div>
