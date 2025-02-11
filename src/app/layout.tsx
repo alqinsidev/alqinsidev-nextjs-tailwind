@@ -11,12 +11,12 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Padlan Alqinsi',
-  description: "Everything about Padlan is here.",
+  title: 'Padlan Alqinsi - Software Engineer',
+  description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
   metadataBase: new URL('https://alqinsidev.vercel.app'),
   openGraph: {
-    title: 'Padlan Alqinsi',
-    description: "Everything about Padlan is here.",
+    title: 'Padlan Alqinsi - Software Engineer',
+    description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
     url: 'https://alqinsidev.vercel.app',
     siteName: 'Padlan Alqinsi',
     images: [
