@@ -70,22 +70,22 @@ export default function Home() {
           />
         </motion.div>
         <div className='flex w-full flex-col items-center justify-center lg:ml-10 lg:w-2/5 lg:items-start lg:gap-20'>
-          <motion.p
+          <motion.h1
             initial='begin'
             animate='end'
             variants={heroTitleVariants}
             className='h-16 font-sans text-4xl font-bold text-gray-700 lg:h-24 lg:text-7xl'
           >
             Welcome to my page !
-          </motion.p>
-          <motion.p
+          </motion.h1>
+          <motion.h2
             initial='begin'
             animate='end'
             variants={heroSubTitleVariants}
             className='text-md font-[400] text-gray-700 lg:text-lg'
           >
             Software Engineer, IT Enthussiast, etc
-          </motion.p>
+          </motion.h2>
         </div>
       </div>
     </div>

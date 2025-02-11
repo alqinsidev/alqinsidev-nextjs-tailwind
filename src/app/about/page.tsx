@@ -16,8 +16,8 @@ const AboutPage = () => {
           className='w-auto h-[50vh] mb-5 md:mb-0'
         />
         <div className='flex flex-col text-center md:text-justify px-10 gap-3'>
-          <p className='font-sans font-bold text-3xl text-gray-700 md:text-5xl'>PADLAN ALQINSI</p>
-          <p className='font-extralight text-xl'>Software Engineer, IT Enthusiast, etc.</p>
+          <h1 className='font-sans font-bold text-3xl text-gray-700 md:text-5xl'>PADLAN ALQINSI</h1>
+          <h2 className='font-extralight text-xl'>Software Engineer, IT Enthusiast, etc.</h2>
           <p className='font-extralight text-xs'>A short story about me</p>
           <p className='font-extralight text-sm textgr700'>I was graduated as an Electrical Engineer and start my professional journey as an Internet of Things Developer.</p>
           <p className='font-extralight text-sm textgr700'>In my early carrer, I was focusing to made an end-to-end solution for IoT system, Developing a whole system from the device it self until the end users application.</p>

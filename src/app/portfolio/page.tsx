@@ -60,7 +60,7 @@ const PortfolioPage = () => {
           />
         </motion.div>
         <motion.div variants={rightVariants} initial="start" animate="end" className='h-1/2 md:h-full w-screen md:w-2/3 flex flex-col justify-start md:justify-center items-center py-10 md:pr-10 lg:mb-32'>
-          <p className='text-center lg:text-justify px-5 md:px-0 font-sans font-extrabold text-gray-700 text-3xl w-full'>MY PORTFOLIO</p>
+          <h1 className='text-center lg:text-justify px-5 md:px-0 font-sans font-extrabold text-gray-700 text-3xl w-full'>MY PORTFOLIO</h1>
           <p className='text-center lg:text-justify lg:text-lg px-5 md:px-0 py-3 w-full'>Welcome to my portfolio section, as a software engineer let me introduce you some valuable work's of mine</p>
           <p className='text-center lg:text-justify lg:text-lg px-5 md:px-0 w-full'>Keep visit this page, I'm constantly expanding my portfolio with new and exciting projects, so be sure to check back and explore the full range of my capabilities.</p>
         </motion.div>
