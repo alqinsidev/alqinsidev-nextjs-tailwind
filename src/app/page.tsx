@@ -69,14 +69,14 @@ export default function Home() {
             alt='si ganteng ilang'
           />
         </motion.div>
-        <div className='flex w-full flex-col items-center justify-center lg:ml-10 lg:w-2/5 lg:items-start lg:gap-20'>
+        <div className='flex w-full flex-col items-center justify-center lg:ml-10 lg:w-3/5 lg:items-start '>
           <motion.h1
             initial='begin'
             animate='end'
             variants={heroTitleVariants}
             className='h-16 font-sans text-4xl font-bold text-gray-700 lg:h-24 lg:text-7xl'
           >
-            Welcome to my page !
+            Halo, Saya Padlan !
           </motion.h1>
           <motion.h2
             initial='begin'
