@@ -124,7 +124,7 @@ const PlaygroundPage = () => {
       </motion.div>
       <motion.div variants={leftVariants} initial="start" animate="end" className='mb-4 flex h-[90vh] w-[95%] flex-col items-center justify-between rounded-3xl border-2 border-gray-500 bg-gray-100 md:w-2/3 lg:w-[30vw] lg:h-[80vh]'>
         <div className='flex h-12 w-full flex-col items-center justify-center rounded-t-3xl border-b-2 bg-white pt-1'>
-          <p className='font-bold'>Gemini AI </p>
+          <h1 className='font-bold'>Padlan Personal Bot</h1>
           <span className='font-extralight text-xs text-gray-300'>v.0.9.0</span>
         </div>
         <div ref={chatBox} className='flex h-full w-full flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-3 py-3 odd:justify-end'>
@@ -140,7 +140,7 @@ const PlaygroundPage = () => {
             <textarea
               ref={inputChatBox}
               className='h-full w-full resize-none text-sm focus:outline-none'
-              placeholder={isAsking ? "Looking for the answer" : "Ask gemini a question"}
+              placeholder={isAsking ? "Looking for the answer" : "Who is Padlan?"}
               name='question'
               onChange={handleChange}
               onKeyPress={handleKeyPress}
