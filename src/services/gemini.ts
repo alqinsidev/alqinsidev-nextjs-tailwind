@@ -12,7 +12,7 @@ interface Config {
   api_key:string
 }
 
-const MODEL_NAME = 'gemini-pro'
+const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL_NAME || 'gemini-2.0-flash-exp'
 
 const geminiService = {
   getConfig: async function (): Promise<Config> {
