@@ -2,7 +2,8 @@
 import Carousel from '@/components/carousel/carousel'
 import { Asset, Project } from '@/domain/response'
 import {motion} from 'framer-motion'
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
+import ProjectDetailModal from './projectDetailModal'
 
 interface ProjectCardProps {
     project: Project
@@ -34,7 +35,24 @@ const fadeIn = {
   }
 
 const ProjectCard: FC<ProjectCardProps> = ({ project }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const projectAssetsUrls = project.assets.map((a: Asset) => a.uri)
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const ReadMore = () => {
+        return project.detail !== "" ? (
+            <span onClick={handleOpenModal} className='text-blue-500 hover:underline cursor-pointer'>Read more</span>
+        ) : null;
+    };
+
     return (
         <motion.div variants={fadeIn} initial="initial" whileInView={"ready"} viewport={{once:true}} className='bg-white even:bg-gray-100 w-full min-h-[480px] md:border-4 border-gray-300 md:rounded-3xl flex flex-col md:flex-row justify-between md:justify-around items-center p-10 md:p-5 gap-5 md:gap-0'>
             <div className='min-h-[480px] w-full md:w-1/3 flex flex-col justify-start md:justify-center items-center gap-5'>
@@ -52,7 +70,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project }) => {
                     <p className='font-sans font-bold text-gray-700'>Contribution</p>
                 </div>
                 <div className='w-full flex justify-start items-start text-center md:text-justify mb-10'>
-                    <p className='font-mono'>{project.contribution}</p>
+                    <p className='font-mono'>{project.contribution} <ReadMore /></p>
                 </div>
                 <div className='w-full flex justify-center md:justify-start items-center text-center gap-2'>
                     {
@@ -60,8 +78,11 @@ const ProjectCard: FC<ProjectCardProps> = ({ project }) => {
                     }
                 </div>
             </div>
+            {isModalOpen && (
+                <ProjectDetailModal project={project} onClose={handleCloseModal} />
+            )}
         </motion.div>
-    )
+    );
 }
 
 export default ProjectCard

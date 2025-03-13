@@ -35,9 +35,11 @@ const leftVariants = {
 
 const PortfolioPage = () => {
   const [portfolios, setPortfolios] = useState<Project[]>([])
+
   useEffect(() => {
     getData()
   }, [])
+
 
   async function getData() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/portfolio.json`)
