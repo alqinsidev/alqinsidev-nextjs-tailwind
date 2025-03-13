@@ -48,7 +48,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project }) => {
     };
 
     const ReadMore = () => {
-        return project.detail !== "" ? (
+        return project.detail ? (
             <span onClick={handleOpenModal} className='text-blue-500 hover:underline cursor-pointer'>Read more</span>
         ) : null;
     };
