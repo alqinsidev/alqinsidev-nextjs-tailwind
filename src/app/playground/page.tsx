@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import { sendGTMEvent } from '@next/third-parties/google'
 import React, { useEffect, useRef, useState } from 'react'
 import ChatBuble from './components/chatBuble'
 import { FaArrowUp } from 'react-icons/fa'
@@ -71,6 +72,7 @@ const PlaygroundPage = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+    let eventSuccess = true
     e.preventDefault();
     setIsAsking(true);
   
@@ -95,9 +97,14 @@ const PlaygroundPage = () => {
   
       setParts((prev) => [...prev, userQuestion, streamedAnswer]);
     } catch (error) {
+      eventSuccess = false
       setConversation((prev) => [...prev, 'Something went wrong']);
       console.error(error);
     } finally {
+      sendGTMEvent({
+        event: "btn_playground_ask_ai_clicked",
+        value: eventSuccess
+      })
       setIsAsking(false);
     }
   };
