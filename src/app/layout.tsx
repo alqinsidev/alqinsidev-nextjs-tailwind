@@ -1,9 +1,11 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Montserrat } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/navbar/navbar'
 import Footer from '@/components/footer/footer'
+import GTMTracker from '@/components/gtm/gtm-tracker'
 
 const montserrat = Montserrat({
   weight: '400',
@@ -39,8 +41,39 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <head>
+        {/* Google Analytics - Load in the Background */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+      </head>
       <body className={montserrat.className}>
+        {/* Google Tag Manager NoScript (for users with JS disabled) */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
         <div className='h-screen w-screen'>
+          <GTMTracker/>
           <div className='absolute left-0 top-0 h-20 w-screen'>
             <Navbar />
           </div>
