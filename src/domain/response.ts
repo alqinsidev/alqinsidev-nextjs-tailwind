@@ -10,4 +10,5 @@ export interface Project {
     name: string;
     summary: string;
     tags: string[];
+    detail: string;
 }
