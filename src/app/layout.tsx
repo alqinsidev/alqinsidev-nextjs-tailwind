@@ -41,6 +41,9 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GA_ID || ""}/>
+      <head>
+        <link rel="canonical" href="https://alqinsidev.vercel.app/" />
+      </head>
       <body className={montserrat.className}>
         {/* Google Tag Manager NoScript (for users with JS disabled) */}
         <div className='h-screen w-screen'>
