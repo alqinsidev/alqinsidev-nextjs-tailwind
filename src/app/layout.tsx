@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Montserrat } from 'next/font/google'
@@ -73,11 +73,15 @@ export default function RootLayout({
           ></iframe>
         </noscript>
         <div className='h-screen w-screen'>
-          <GTMTracker/>
+          <Suspense>
+            <GTMTracker/>
+          </Suspense>
           <div className='absolute left-0 top-0 h-20 w-screen'>
             <Navbar />
           </div>
-          {children}
+          <React.Suspense>
+            {children}
+          </React.Suspense>
           <div className='h-[30vh] w-screen'>
             <Footer />
           </div>
