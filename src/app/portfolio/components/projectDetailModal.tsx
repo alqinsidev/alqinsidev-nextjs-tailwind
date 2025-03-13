@@ -55,6 +55,7 @@ const ProjectDetailModal: FC<ProjectDetailModalProps> = ({ project, onClose, isO
               ul: ({...props }) => <ul className="list-disc pl-6 space-y-1" {...props} />,
               ol: ({...props }) => <ol className="list-decimal pl-6 space-y-1" {...props} />,
               li: ({...props }) => <li className="text-gray-700" {...props} />,
+              strong: ({ ...props }) => <strong className="text-md font-extrabold text-gray-900" {...props} />,
             }}
           >
             {project.detail.replace(/\s{2,}/g, "\n\n")}
