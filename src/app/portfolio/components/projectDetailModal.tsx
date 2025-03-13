@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { useEffect, FC } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Project } from "@/domain/response";
@@ -6,12 +6,25 @@ import { Project } from "@/domain/response";
 interface ProjectDetailModalProps {
   project: Project;
   onClose: () => void;
+  isOpen: boolean;
 }
 
-const ProjectDetailModal: FC<ProjectDetailModalProps> = ({ project, onClose }) => {
+const ProjectDetailModal: FC<ProjectDetailModalProps> = ({ project, onClose, isOpen }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"; // Disable scrolling
+    } else {
+      document.body.style.overflow = ""; // Restore scrolling
+    }
+    
+    return () => {
+      document.body.style.overflow = ""; // Cleanup on unmount
+    };
+  }, [isOpen]);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 px-4 z-50">
-      <div className="w-full max-w-[800px] max-h-[90vh] bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="w-full max-w-[820px] max-h-[90vh] bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="flex items-center justify-between bg-gray-200 px-4 py-2 rounded-t-lg">
           <div className="flex space-x-2">
             <button onClick={onClose} className="w-3 h-3 bg-red-500 rounded-full cursor-pointer"></button>

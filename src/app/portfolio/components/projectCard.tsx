@@ -79,7 +79,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project }) => {
                 </div>
             </div>
             {isModalOpen && (
-                <ProjectDetailModal project={project} onClose={handleCloseModal} />
+                <ProjectDetailModal project={project} onClose={handleCloseModal} isOpen={isModalOpen} />
             )}
         </motion.div>
     );
