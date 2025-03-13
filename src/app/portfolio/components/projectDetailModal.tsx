@@ -40,11 +40,11 @@ const ProjectDetailModal: FC<ProjectDetailModalProps> = ({ project, onClose, isO
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
-              h1: ({ node, ...props }) => <h1 className="text-2xl md:text-3xl font-bold mt-4 mb-2" {...props} />,
-              h2: ({ node, ...props }) => <h2 className="text-xl md:text-2xl font-semibold mt-4 mb-2" {...props} />,
-              h3: ({ node, ...props }) => <h3 className="text-lg md:text-xl font-medium mt-3 mb-1" {...props} />,
-              p: ({ node, ...props }) => <p className="text-gray-700 leading-relaxed" {...props} />,
-              a: ({ node, ...props }) => (
+              h1: ({...props }) => <h1 className="text-2xl md:text-3xl font-bold mt-4 mb-2" {...props} />,
+              h2: ({...props }) => <h2 className="text-xl md:text-2xl font-semibold mt-4 mb-2" {...props} />,
+              h3: ({...props }) => <h3 className="text-lg md:text-xl font-medium mt-3 mb-1" {...props} />,
+              p: ({...props }) => <p className="text-gray-700 leading-relaxed" {...props} />,
+              a: ({...props }) => (
                 <a
                   className="text-blue-600 hover:text-blue-800 underline transition-all"
                   target="_blank"
@@ -52,9 +52,9 @@ const ProjectDetailModal: FC<ProjectDetailModalProps> = ({ project, onClose, isO
                   {...props}
                 />
               ),
-              ul: ({ node, ...props }) => <ul className="list-disc pl-6 space-y-1" {...props} />,
-              ol: ({ node, ...props }) => <ol className="list-decimal pl-6 space-y-1" {...props} />,
-              li: ({ node, ...props }) => <li className="text-gray-700" {...props} />,
+              ul: ({...props }) => <ul className="list-disc pl-6 space-y-1" {...props} />,
+              ol: ({...props }) => <ol className="list-decimal pl-6 space-y-1" {...props} />,
+              li: ({...props }) => <li className="text-gray-700" {...props} />,
             }}
           >
             {project.detail.replace(/\s{2,}/g, "\n\n")}
