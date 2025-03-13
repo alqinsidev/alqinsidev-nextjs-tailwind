@@ -71,26 +71,41 @@ const PlaygroundPage = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
-    e.preventDefault()
-    setIsAsking(true)
-    const updatedConversation = [...conversation, formData.question]
-    setConversation(updatedConversation)
-    setFormData({ question: '' })
+    e.preventDefault();
+    setIsAsking(true);
+  
+    const userQuestion = formData.question;
+    setConversation((prev) => [...prev, userQuestion]); // Append user question first
+    setFormData({ question: '' });
+  
     try {
-      const answer = await handleAskGemini(formData.question, parts)
-      setConversation([...updatedConversation, answer])
-      setParts([...parts, formData.question, answer])
+      const answerStream = (await handleAskGemini(userQuestion, parts));
+      let streamedAnswer = '';
+  
+      // Append an empty message for the answer
+      setConversation((prev) => [...prev, '']);
+  
+      for await (const chunk of answerStream) {
+        const message = chunk.candidates?.[0].content.parts[0].text;
+        if (message) {
+          streamedAnswer += message;
+          setConversation((prev) => [...prev.slice(0, -1), streamedAnswer]);
+        }
+      }
+  
+      setParts((prev) => [...prev, userQuestion, streamedAnswer]);
     } catch (error) {
-      setConversation([...updatedConversation, 'something went wrong'])
-      console.error(error)
+      setConversation((prev) => [...prev, 'Something went wrong']);
+      console.error(error);
     } finally {
-      setIsAsking(false)      
+      setIsAsking(false);
     }
-  }
+  };
+  
 
   const handleAskGemini = async (question: string, parts: string[]) => {
     try {
-      return await geminiService.askGemini(question, parts)
+      return (await geminiService.askGeminiStream(question, parts)).stream
     } catch (error) {
       console.error(error)
       throw error

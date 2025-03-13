@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React from 'react'
 import type { Metadata } from 'next'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { Montserrat } from 'next/font/google'
