@@ -1,6 +1,8 @@
 'use client'
 
 import React from 'react'
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { motion } from 'framer-motion'
 
 interface ChatBubleProps {
@@ -56,7 +58,13 @@ const ChatBuble: React.FC<ChatBubleProps> = ({ chat, index, isLoading }) => {
             ))}
           </p>
         ) : (
-          <p className=' text-sm '>{chat}</p>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}
+            components={{ 
+              p: ({ ...props }) => <p className="text-sm text-gray-700 leading-relaxed" {...props} />,
+              li: ({ ...props }) => <li className="text-sm text-gray-700 leading-relaxed" {...props} />,
+            }}>
+            {chat}
+          </ReactMarkdown>
         )}
       </div>
     </motion.div>
