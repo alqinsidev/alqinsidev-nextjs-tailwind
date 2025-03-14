@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://alqinsidev.vercel.app/sitemap.xml
+Sitemap: https://alqinsidev.net/sitemap.xml

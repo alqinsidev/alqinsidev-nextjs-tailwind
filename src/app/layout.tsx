@@ -14,11 +14,11 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Padlan Alqinsi - Software Engineer',
   description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
-  metadataBase: new URL('https://alqinsidev.vercel.app'),
+  metadataBase: new URL('https://alqinsidev.net'),
   openGraph: {
     title: 'Padlan Alqinsi - Software Engineer',
     description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
-    url: 'https://alqinsidev.vercel.app',
+    url: 'https://alqinsidev.net',
     siteName: 'Padlan Alqinsi',
     images: [
       {
@@ -42,7 +42,7 @@ export default function RootLayout({
     <html lang='en'>
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GA_ID || ""}/>
       <head>
-        <link rel="canonical" href="https://alqinsidev.vercel.app/" />
+        <link rel="canonical" href="https://alqinsidev.net/" />
       </head>
       <body className={montserrat.className}>
         {/* Google Tag Manager NoScript (for users with JS disabled) */}
