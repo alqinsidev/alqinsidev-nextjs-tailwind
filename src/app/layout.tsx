@@ -42,6 +42,7 @@ export default function RootLayout({
     <html lang='en'>
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GA_ID || ""}/>
       <head>
+        <meta name="google-site-verification" content="xj216UYIB7vh92OXrvro-OBv-R6X13ju5xw87JhdTiM" />
         <link rel="canonical" href="https://alqinsidev.net/" />
       </head>
       <body className={montserrat.className}>
