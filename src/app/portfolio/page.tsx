@@ -5,6 +5,12 @@ import React, { useState, useEffect } from 'react'
 import ProjectCard from './components/projectCard'
 import Image from 'next/image';
 import {motion} from 'framer-motion'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Portfolio',
+  description: 'Explore Padlan Alqinsi\'s portfolio, showcasing a diverse range of software engineering projects and skills.',
+};
 
 const rightVariants = {
   start: {

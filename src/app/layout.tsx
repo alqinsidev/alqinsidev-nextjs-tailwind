@@ -11,10 +11,13 @@ const montserrat = Montserrat({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title: 'Padlan Alqinsi - Software Engineer',
-  description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
+export const defaultMetadata: Metadata = { // Rename to defaultMetadata
   metadataBase: new URL('https://alqinsidev.net'),
+  title: {
+    template: '%s | Padlan Alqinsi', // Use a template for dynamic titles
+    default: 'Padlan Alqinsi - Software Engineer',
+  },
+  description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
   openGraph: {
     title: 'Padlan Alqinsi - Software Engineer',
     description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
@@ -33,6 +36,8 @@ export const metadata: Metadata = {
 };
 
 const cfBeaconToken = process.env.NEXT_PUBLIC_CF_BEACON_TOKEN;
+
+export const metadata: Metadata = defaultMetadata; // Assign defaultMetadata to metadata
 
 export default function RootLayout({
   children,

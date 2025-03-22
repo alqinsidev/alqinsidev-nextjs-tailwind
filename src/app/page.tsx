@@ -2,6 +2,16 @@
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Home', // This will become "Home | Padlan Alqinsi"
+  description: "Welcome to Padlan Alqinsi's personal website. Explore my projects and learn more about my skills as a software engineer.", // Override the default description
+  openGraph: {
+    title: 'Home - Padlan Alqinsi', // Override the default open graph title
+    description: "Welcome to Padlan Alqinsi's personal website. Explore my projects and learn more about my skills as a software engineer.", // Override the default open graph description
+  },
+};
 
 export default function Home() {
   const [imageReady, setImageReady] = useState(false)
