@@ -3,12 +3,6 @@
 import Image from 'next/image'
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'About Me',
-  description: 'Learn more about Padlan Alqinsi, his background, skills, and experience as a software engineer.',
-};
 
 const AboutPage = () => {
   return (

@@ -6,12 +6,6 @@ import ChatBuble from './components/chatBuble'
 import { FaArrowUp } from 'react-icons/fa'
 import geminiService from '@/services/gemini'
 import { motion } from 'framer-motion'
-import { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Playground',
-  description: 'Engage with Padlan Alqinsi\'s AI-powered chatbot, built using Gemini Models, and explore a dynamic conversational experience.',
-};
 
 interface QuestionForm {
   question: string
