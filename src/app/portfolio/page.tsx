@@ -55,7 +55,7 @@ const PortfolioPage = () => {
       <div className='h-full min-h-screen w-screen flex flex-col md:flex-row justify-center items-center md:px-36 bg-gradient-to-b from-sky-100 to-white pt-20'>
         <motion.div variants={leftVariants} initial="start" animate="end" className='h-1/2 md:h-full md:w-1/2 relative flex justify-center py-12'>
           <Image
-            src={'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2Fundraw_online_stats_0g94.svg?alt=media&token=893d774d-8e65-441c-a571-932bf35435bd'}
+            src={'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2Fportfolio-banner.svg?alt=media&token=bff577d2-19af-4870-8c60-7fee72b731d6'}
             width={480}
             height={420}
             alt='img'
