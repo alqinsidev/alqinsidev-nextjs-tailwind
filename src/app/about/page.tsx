@@ -9,7 +9,7 @@ const AboutPage = () => {
     <div className='min-h-screen w-full bg-yellow-50 pt-20 flex justify-center items-center'>
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0, transition: { duration: 1 } }} className='flex flex-col md:flex-row-reverse justify-center items-center py-10 lg:w-3/4'>
         <Image
-          src={"https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2Fhandsome-man.png?alt=media&token=30415da5-aee7-4653-94b5-8e215bc7a4ff"}
+          src={"https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2Fjumbotron.webp?alt=media&token=0df711b5-a59e-47d0-9a25-962693c32850"}
           width={420}
           height={700}
           alt='handsome-man'

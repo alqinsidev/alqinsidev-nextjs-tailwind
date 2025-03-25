@@ -62,7 +62,7 @@ export default function Home() {
                 : ``
             }
             src={
-              'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2Fhandsome-man.png?alt=media&token=30415da5-aee7-4653-94b5-8e215bc7a4ff'
+              'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2Fjumbotron.webp?alt=media&token=0df711b5-a59e-47d0-9a25-962693c32850'
             }
             height={420}
             width={420}

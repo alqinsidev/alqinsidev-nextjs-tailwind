@@ -128,7 +128,7 @@ const PlaygroundPage = () => {
             width={120}
             height={120}
             src={
-              'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2Fchat.svg?alt=media&token=d91c1962-8be3-4879-9783-7939177a4ae4'
+              'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2Fplayground-assets.svg?alt=media&token=624cf2a4-f4b8-48a7-901f-df8310beb98a'
             }
             alt='image cannot be loaded'
           />
