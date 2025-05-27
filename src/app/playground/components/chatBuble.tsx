@@ -4,6 +4,7 @@ import React from 'react'
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from 'framer-motion'
+import remarkBreaks from 'remark-breaks';
 
 interface ChatBubleProps {
   chat: string
@@ -58,10 +59,12 @@ const ChatBuble: React.FC<ChatBubleProps> = ({ chat, index, isLoading }) => {
             ))}
           </p>
         ) : (
-          <ReactMarkdown remarkPlugins={[remarkGfm]}
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}
             components={{ 
-              p: ({ ...props }) => <p className="text-sm text-gray-700 leading-relaxed" {...props} />,
+              p: ({ ...props }) => <p className="text-sm text-gray-700 leading-relaxed pb-5" {...props} />,
+              a: ({ ...props }) => <a className="text-sm text-blue-400 leading-relaxed" {...props} />,
               li: ({ ...props }) => <li className="text-sm text-gray-700 leading-relaxed" {...props} />,
+              ul: ({ ...props }) => <ul className="text-sm text-gray-700 leading-relaxed pb-5" {...props} />,
             }}>
             {chat}
           </ReactMarkdown>
