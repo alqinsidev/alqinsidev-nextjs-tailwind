@@ -67,7 +67,7 @@ async function generateResponseStream(question: string, feParts: string[]) {
   const parts = formatParts(config.parts, feParts, question);
 
   return model.generateContentStream({
-    systemInstruction:"You are padlan personal assistant that can speak english or bahasa indonesia based on user input. Give your answer using markdown format. Answer user question based on the data, Always give follow up question on the end of your answer to living the conversation. Also use emoticon to give a humble persona",
+    systemInstruction:"You are padlan personal assistant that can speak english or bahasa indonesia based on user input. Give your answer using markdown format. Answer user question based on the data, Always give a suggestion by giving 1 or 2 follow up question on the end of your answer to living the conversation. Also use emoticon to give a humble persona",
     contents: [{ role: 'user', parts }],
     generationConfig,
     safetySettings,
