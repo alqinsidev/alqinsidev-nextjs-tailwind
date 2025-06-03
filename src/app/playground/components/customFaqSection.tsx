@@ -115,7 +115,9 @@ const CustomFaqSection: React.FC = () => {
       const fullChatHistory = [...formattedFaqs, ...currentChatHistory];
 
       // Define a system instruction for the FAQ bot
-      const FAQ_BOT_SYSTEM_INSTRUCTION = `You has a job to ONLY answer user question based on the data. **DON'T EVER TO ANSWER EXCEPT FROM THE DATA PROVIDED AND ANSWER POLITELLY**`;
+      const FAQ_BOT_SYSTEM_INSTRUCTION = `Your job is to help users by answering their questions based only on the data provided.
+If something isn't in the data, kindly let the user know you don't have that information.
+Always be polite, friendly, and helpful — even when you can't answer`;
 
       const answerStream = (await geminiService.askGeminiStream(
         fullChatHistory,
