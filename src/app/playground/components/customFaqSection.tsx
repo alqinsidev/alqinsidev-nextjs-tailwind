@@ -29,12 +29,19 @@ const CustomFaqSection: React.FC = () => {
   const [chatConversation, setChatConversation] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isChatAsking, setIsChatAsking] = useState(false);
+  const [showBanner, setShowBanner] = useState(false); // New state for contextual banner
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedFaqs = sessionStorage.getItem('customFaqs');
       if (storedFaqs) {
         setFaqs(JSON.parse(storedFaqs));
+      }
+
+      // Check if the banner has been dismissed
+      const hasDismissedBanner = localStorage.getItem('hasDismissedFaqBanner');
+      if (!hasDismissedBanner) {
+        setShowBanner(true);
       }
     }
   }, []);
@@ -108,7 +115,7 @@ const CustomFaqSection: React.FC = () => {
       const fullChatHistory = [...formattedFaqs, ...currentChatHistory];
 
       // Define a system instruction for the FAQ bot
-      const FAQ_BOT_SYSTEM_INSTRUCTION = `You are my helper that answer user question based on the data. **DON'T EVER TO ANSWER EXCEPT FROM THE DATA PROVIDED**`;
+      const FAQ_BOT_SYSTEM_INSTRUCTION = `You has a job to ONLY answer user question based on the data. **DON'T EVER TO ANSWER EXCEPT FROM THE DATA PROVIDED AND ANSWER POLITELLY**`;
 
       const answerStream = (await geminiService.askGeminiStream(
         fullChatHistory,
@@ -140,17 +147,36 @@ const CustomFaqSection: React.FC = () => {
     }
   };
 
+  const handleDismissBanner = () => {
+    setShowBanner(false);
+    localStorage.setItem('hasDismissedFaqBanner', 'true');
+  };
+
   return (
-    <section className="py-12 bg-gradient-to-b from-white to-sky-100 sm:py-16 lg:py-20 w-full">
-      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
+    <section id="faq-section" className="py-12 bg-gradient-to-b from-white to-sky-100 sm:py-16 lg:py-20 w-full">
+      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 flex flex-col-reverse lg:flex-row gap-8">
         {/* FAQ Chatbot Section (Main Content) */}
         <div className="w-full lg:w-3/4 flex flex-col h-[80vh] border-2 border-gray-300 rounded-3xl bg-white shadow-md">
+          {showBanner && (
+            <div className="bg-sky-100 border-b border-sky-200 text-sky-800 px-4 py-3 rounded-t-3xl flex items-center justify-between text-sm">
+              <p className="font-medium">
+                👋 Welcome! Add custom FAQs to train your AI assistant.
+              </p>
+              <button
+                onClick={handleDismissBanner}
+                className="text-sky-600 hover:text-sky-800 focus:outline-none"
+                aria-label="Dismiss onboarding banner"
+              >
+                <FaTimes className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <div className="flex h-12 w-full flex-col items-center justify-center border-b-2 border-gray-300 bg-white pt-1 rounded-t-3xl">
             <h1 className="font-bold text-gray-700">Your Personalized AI Assistant</h1>
           </div>
           <div ref={chatBoxRef} className="flex h-full w-full flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-3 py-3 bg-white">
             {chatConversation.length === 0 ? (
-              <p className="text-center text-gray-500 mt-4">Start chatting now! Your AI is ready to answer questions using the FAQs you've provided.</p>
+              <p className="text-center text-gray-500 mt-4">Try me by add new pairs of FAQ!</p>
             ) : (
               chatConversation.map((msg, idx) => (
                 <ChatBuble key={idx} chat={msg.text} index={idx} isLoading={isChatAsking && !msg.isUser && idx === chatConversation.length - 1} isUser={msg.isUser} />
@@ -209,7 +235,7 @@ const CustomFaqSection: React.FC = () => {
             </div>
           </div>
 
-          <div className="max-w-3xl mx-auto space-y-2 overflow-y-auto h-80"> {/* Changed height to h-80 */}
+          <div className="max-w-3xl mx-auto space-y-2 overflow-y-auto lg:h-80"> 
             {(
               faqs.map((faq, index) => (
                 <div key={index} className="p-4 bg-white border-2 border-gray-300 rounded-xl shadow-sm even:bg-gray-50">
@@ -238,14 +264,25 @@ const CustomFaqSection: React.FC = () => {
             placeholder="Enter your question"
             value={newQuestion}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewQuestion(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && newQuestion.trim() && newAnswer.trim()) {
+                handleAddFaq();
+              }
+            }}
+            required
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 shadow-sm"
           />
-          <textarea
+          <input
+            type="text"
             placeholder="Enter your answer"
             value={newAnswer}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewAnswer(e.target.value)}
-            rows={4}
-            maxLength={100} // Added character limit
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewAnswer(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && newQuestion.trim() && newAnswer.trim()) {
+                handleAddFaq();
+              }
+            }}
+            required
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 shadow-sm"
           />
           {faqError && <p className="text-red-500 text-sm">{faqError}</p>} {/* Display error message */}
