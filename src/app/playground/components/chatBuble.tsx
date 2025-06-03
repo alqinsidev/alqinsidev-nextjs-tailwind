@@ -8,12 +8,11 @@ import remarkBreaks from 'remark-breaks';
 
 interface ChatBubleProps {
   chat: string;
-  index: number;
   isLoading: boolean;
   isUser?: boolean; // Add isUser prop
 }
 
-const ChatBuble: React.FC<ChatBubleProps> = ({ chat, index, isLoading, isUser = false }) => {
+const ChatBuble: React.FC<ChatBubleProps> = ({ chat, isLoading, isUser = false }) => {
   const isBot = !isUser; // Determine if it's a bot message
 
   const chatBubbleVariants = {

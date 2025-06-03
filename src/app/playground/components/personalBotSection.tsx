@@ -39,10 +39,7 @@ const leftVariants = {
   }
 }
 
-interface PersonalBotSectionProps {
-}
-
-const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
+const PersonalBotSection: React.FC = () => {
   const chatBox = useRef<HTMLDivElement>(null)
   const inputChatBox = useRef<HTMLTextAreaElement>(null)
   const [isAsking, setIsAsking] = useState<boolean>(false)
@@ -56,7 +53,6 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
     { text: 'Ask something about Padlan', isUser: false },
   ]);
   const [parts, setParts] = useState<string[]>([]); // This will store raw strings for now, to be converted to ChatHistoryItem
-  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model'; parts: { text: string }[] }[]>([]);
   const [preloadedHistory, setPreloadedHistory] = useState<{ role: 'user' | 'model'; parts: { text: string }[] }[]>([]);
 
   const PERSONAL_BOT_SYSTEM_INSTRUCTION = "You are padlan personal assistant that can speak english or bahasa indonesia based on user input. Give your answer using markdown format. Answer user question based on the data, Always give a suggestion by giving 1 or 2 follow up question on the end of your answer to living the conversation. Also use emoticon to give a humble persona";
@@ -146,11 +142,6 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
   
       // Update parts and chatHistory for next turn
       setParts((prev) => [...prev, userQuestion, streamedAnswer]);
-      setChatHistory((prev) => [
-        ...prev,
-        { role: 'user', parts: [{ text: userQuestion }] },
-        { role: 'model', parts: [{ text: streamedAnswer }] },
-      ]);
     } catch (error) {
       eventSuccess = false;
       setConversation((prev) => [...prev, { text: 'Something went wrong', isUser: false }]); // Ensure it's a ChatMessage object
@@ -196,7 +187,7 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
         </div>
         <div ref={chatBox} className='flex h-full w-full flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-3 py-3'>
           {conversation.map((msg, idx) => (
-            <ChatBuble key={idx} chat={msg.text} index={idx} isLoading={isAsking && !msg.isUser && idx === conversation.length - 1} isUser={msg.isUser} />
+            <ChatBuble key={idx} chat={msg.text} isLoading={isAsking && !msg.isUser && idx === conversation.length - 1} isUser={msg.isUser} />
           ))}
         </div>
         <div className='mb-1 flex h-20 w-full items-center justify-center hover:cursor-text' onClick={() => inputChatBox.current?.focus()}>

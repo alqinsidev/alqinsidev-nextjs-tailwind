@@ -4,7 +4,6 @@ import {
   HarmBlockThreshold,
   GenerativeModel,
   GenerateContentStreamResult,
-  GenerateContentResult,
   Part,
 } from '@google/generative-ai';
 

@@ -179,7 +179,7 @@ const CustomFaqSection: React.FC = () => {
               <p className="text-center text-gray-500 mt-4">Try me by add new pairs of FAQ!</p>
             ) : (
               chatConversation.map((msg, idx) => (
-                <ChatBuble key={idx} chat={msg.text} index={idx} isLoading={isChatAsking && !msg.isUser && idx === chatConversation.length - 1} isUser={msg.isUser} />
+                <ChatBuble key={idx} chat={msg.text} isLoading={isChatAsking && !msg.isUser && idx === chatConversation.length - 1} isUser={msg.isUser} />
               ))
             )}
           </div>
