@@ -16,7 +16,19 @@ interface ChatMessage {
   isUser: boolean;
 }
 
-const CustomFaqSection: React.FC = () => {
+interface GeminiConfig {
+  parts: { input: string; output: string }[];
+  api_key: string;
+  system_prompts: {
+    faq_section: string;
+  };
+}
+
+interface CustomFaqSectionProps {
+  geminiConfig: GeminiConfig | null;
+}
+
+const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => {
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const inputChatBoxRef = useRef<HTMLTextAreaElement>(null);
 
@@ -30,6 +42,7 @@ const CustomFaqSection: React.FC = () => {
   const [chatInput, setChatInput] = useState('');
   const [isChatAsking, setIsChatAsking] = useState(false);
   const [showBanner, setShowBanner] = useState(false); // New state for contextual banner
+  const [faqSystemPrompt, setFaqSystemPrompt] = useState('');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -57,6 +70,12 @@ const CustomFaqSection: React.FC = () => {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [chatConversation]);
+
+  useEffect(() => {
+    if (geminiConfig) {
+      setFaqSystemPrompt(geminiConfig.system_prompts.faq_section);
+    }
+  }, [geminiConfig]);
 
   const handleAddFaq = () => {
     setFaqError(''); // Clear previous errors
@@ -115,9 +134,7 @@ const CustomFaqSection: React.FC = () => {
       const fullChatHistory = [...formattedFaqs, ...currentChatHistory];
 
       // Define a system instruction for the FAQ bot
-      const FAQ_BOT_SYSTEM_INSTRUCTION = `Your job is to help users by answering their questions based only on the data provided.
-If something isn't in the data, kindly let the user know you don't have that information.
-Always be polite, friendly, and helpful — even when you can't answer`;
+      const FAQ_BOT_SYSTEM_INSTRUCTION = faqSystemPrompt;
 
       const answerStream = (await geminiService.askGeminiStream(
         fullChatHistory,

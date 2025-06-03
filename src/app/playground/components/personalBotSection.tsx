@@ -5,11 +5,22 @@ import ChatBuble from './chatBuble';
 import { FaArrowUp } from 'react-icons/fa';
 import Image from 'next/image';
 import geminiService from '@/services/gemini';
-import { sendGTMEvent } from '@next/third-parties/google'
-
+import { sendGTMEvent } from '@next/third-parties/google';
 
 interface QuestionForm {
-  question: string
+  question: string;
+}
+
+interface GeminiConfig {
+  parts: { input: string; output: string }[];
+  api_key: string;
+  system_prompts: {
+    faq_section: string;
+  };
+}
+
+interface PersonalBotSectionProps {
+  geminiConfig: GeminiConfig | null;
 }
 
 const rightVariants = {
@@ -21,29 +32,29 @@ const rightVariants = {
     opacity: 1,
     x: 0,
     transition: {
-      duration: 1.2
-    }
-  }
-}
+      duration: 1.2,
+    },
+  },
+};
 const leftVariants = {
   start: {
     opacity: 0,
-    x: -20
+    x: -20,
   },
   end: {
     opacity: 1,
     x: 0,
     transition: {
-      duration: .7,
-    }
-  }
-}
+      duration: 0.7,
+    },
+  },
+};
 
-const PersonalBotSection: React.FC = () => {
-  const chatBox = useRef<HTMLDivElement>(null)
-  const inputChatBox = useRef<HTMLTextAreaElement>(null)
-  const [isAsking, setIsAsking] = useState<boolean>(false)
-  const [formData, setFormData] = useState<QuestionForm>({ question: '' })
+const PersonalBotSection: React.FC<PersonalBotSectionProps> = ({ geminiConfig }) => {
+  const chatBox = useRef<HTMLDivElement>(null);
+  const inputChatBox = useRef<HTMLTextAreaElement>(null);
+  const [isAsking, setIsAsking] = useState<boolean>(false);
+  const [formData, setFormData] = useState<QuestionForm>({ question: '' });
   interface PersonalBotChatMessage {
     text: string;
     isUser: boolean;
@@ -55,7 +66,8 @@ const PersonalBotSection: React.FC = () => {
   const [parts, setParts] = useState<string[]>([]); // This will store raw strings for now, to be converted to ChatHistoryItem
   const [preloadedHistory, setPreloadedHistory] = useState<{ role: 'user' | 'model'; parts: { text: string }[] }[]>([]);
 
-  const PERSONAL_BOT_SYSTEM_INSTRUCTION = "You are padlan personal assistant that can speak english or bahasa indonesia based on user input. Give your answer using markdown format. Answer user question based on the data, Always give a suggestion by giving 1 or 2 follow up question on the end of your answer to living the conversation. Also use emoticon to give a humble persona";
+  const PERSONAL_BOT_SYSTEM_INSTRUCTION =
+    'You are padlan personal assistant that can speak english or bahasa indonesia based on user input. Give your answer using markdown format. Answer user question based on the data, Always give a suggestion by giving 1 or 2 follow up question on the end of your answer to living the conversation. Also use emoticon to give a humble persona';
 
   useEffect(() => {
     if (chatBox.current) {
@@ -64,28 +76,22 @@ const PersonalBotSection: React.FC = () => {
   }, [conversation]);
 
   useEffect(() => {
-    const fetchPreloadedConfig = async () => {
-      try {
-        const config = await geminiService.getConfig();
-        const formattedPreloadedParts = config.parts.flatMap(({ input, output }) => [
-          { role: 'user' as const, parts: [{ text: input }] },
-          { role: 'model' as const, parts: [{ text: output }] },
-        ]);
-        setPreloadedHistory(formattedPreloadedParts);
-      } catch (error) {
-        console.error("Failed to fetch preloaded Gemini config:", error);
-      }
-    };
-    fetchPreloadedConfig();
-  }, []);
+    if (geminiConfig) {
+      const formattedPreloadedParts = geminiConfig.parts.flatMap(({ input, output }) => [
+        { role: 'user' as const, parts: [{ text: input }] },
+        { role: 'model' as const, parts: [{ text: output }] },
+      ]);
+      setPreloadedHistory(formattedPreloadedParts);
+    }
+  }, [geminiConfig]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && !isAsking) {

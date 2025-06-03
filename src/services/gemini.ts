@@ -14,6 +14,9 @@ const DB_URL = `${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/gemini.json`; // Re-a
 interface Config {
   parts: { input: string; output: string }[];
   api_key: string;
+  system_prompts: {
+    faq_section: string
+  }
 }
 
 interface ChatHistoryItem {
