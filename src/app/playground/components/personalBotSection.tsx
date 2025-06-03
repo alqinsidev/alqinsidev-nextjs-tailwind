@@ -47,16 +47,41 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
   const inputChatBox = useRef<HTMLTextAreaElement>(null)
   const [isAsking, setIsAsking] = useState<boolean>(false)
   const [formData, setFormData] = useState<QuestionForm>({ question: '' })
-  const [conversation, setConversation] = useState([
-    'Ask something about Padlan',
-  ])
-  const [parts, setParts] = useState<string[]>([])
+  interface PersonalBotChatMessage {
+    text: string;
+    isUser: boolean;
+  }
+
+  const [conversation, setConversation] = useState<PersonalBotChatMessage[]>([
+    { text: 'Ask something about Padlan', isUser: false },
+  ]);
+  const [parts, setParts] = useState<string[]>([]); // This will store raw strings for now, to be converted to ChatHistoryItem
+  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model'; parts: { text: string }[] }[]>([]);
+  const [preloadedHistory, setPreloadedHistory] = useState<{ role: 'user' | 'model'; parts: { text: string }[] }[]>([]);
+
+  const PERSONAL_BOT_SYSTEM_INSTRUCTION = "You are padlan personal assistant that can speak english or bahasa indonesia based on user input. Give your answer using markdown format. Answer user question based on the data, Always give a suggestion by giving 1 or 2 follow up question on the end of your answer to living the conversation. Also use emoticon to give a humble persona";
 
   useEffect(() => {
     if (chatBox.current) {
-      chatBox.current.scrollTop = chatBox.current?.scrollHeight
+      chatBox.current.scrollTop = chatBox.current?.scrollHeight;
     }
-  }, [conversation])
+  }, [conversation]);
+
+  useEffect(() => {
+    const fetchPreloadedConfig = async () => {
+      try {
+        const config = await geminiService.getConfig();
+        const formattedPreloadedParts = config.parts.flatMap(({ input, output }) => [
+          { role: 'user' as const, parts: [{ text: input }] },
+          { role: 'model' as const, parts: [{ text: output }] },
+        ]);
+        setPreloadedHistory(formattedPreloadedParts);
+      } catch (error) {
+        console.error("Failed to fetch preloaded Gemini config:", error);
+      }
+    };
+    fetchPreloadedConfig();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -76,55 +101,71 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
-    let eventSuccess = true
+    let eventSuccess = true;
     e.preventDefault();
     setIsAsking(true);
   
     const userQuestion = formData.question;
-    setConversation((prev) => [...prev, userQuestion]); // Append user question first
+    setConversation((prev) => [...prev, { text: userQuestion, isUser: true }]); // Append user question first
     setFormData({ question: '' });
   
+    // Convert current conversation parts to ChatHistoryItem format for Gemini
+    const currentChatHistoryForGemini = parts.map((text, idx) => ({
+      role: idx % 2 === 0 ? 'user' : 'model', // Assuming even indices are user, odd are model
+      parts: [{ text: text }],
+    })) as { role: 'user' | 'model'; parts: { text: string }[] }[];
+
+    // Combine preloaded history with current chat history
+    const fullChatHistory = [...preloadedHistory, ...currentChatHistoryForGemini];
+  
     try {
-      const answerStream = (await handleAskGemini(userQuestion, parts));
+      const answerStream = (await geminiService.askGeminiStream(
+        fullChatHistory,
+        userQuestion,
+        PERSONAL_BOT_SYSTEM_INSTRUCTION
+      )).stream;
       let streamedAnswer = '';
   
       // Append an empty message for the answer
-      setConversation((prev) => [...prev, '']);
+      setConversation((prev) => [...prev, { text: '', isUser: false }]);
   
       for await (const chunk of answerStream) {
         const message = chunk.candidates?.[0].content.parts[0].text;
         if (message) {
           streamedAnswer += message;
-          setConversation((prev) => [...prev.slice(0, -1), streamedAnswer]);
+          setConversation((prev) => {
+            const lastMessage = prev[prev.length - 1];
+            if (lastMessage && !lastMessage.isUser) { // Ensure it's the bot's last message
+              return [...prev.slice(0, -1), { text: streamedAnswer, isUser: false }];
+            }
+            // This case should ideally not be hit if the placeholder is always added first
+            return [...prev, { text: streamedAnswer, isUser: false }];
+          });
         }
       }
   
+      // Update parts and chatHistory for next turn
       setParts((prev) => [...prev, userQuestion, streamedAnswer]);
+      setChatHistory((prev) => [
+        ...prev,
+        { role: 'user', parts: [{ text: userQuestion }] },
+        { role: 'model', parts: [{ text: streamedAnswer }] },
+      ]);
     } catch (error) {
-      eventSuccess = false
-      setConversation((prev) => [...prev, 'Something went wrong']);
+      eventSuccess = false;
+      setConversation((prev) => [...prev, { text: 'Something went wrong', isUser: false }]); // Ensure it's a ChatMessage object
       console.error(error);
     } finally {
       sendGTMEvent({
         event: "btn_playground_ask_ai_clicked",
         value: eventSuccess
-      })
+      });
       setIsAsking(false);
     }
   };
-  
-
-  const handleAskGemini = async (question: string, parts: string[]) => {
-    try {
-      return (await geminiService.askGeminiStream(question, parts)).stream
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
-  }
 
   return (
-    <>
+    <div className='flex min-h-screen w-full flex-col lg:flex-row-reverse items-center justify-center bg-sky-50'>
       <motion.div variants={rightVariants} initial="start" animate="end" className='lg:h-[80vh] flex flex-col w-full lg:w-1/3 lg:justify-start justify-center items-center'>
         <div className='my-5 flex w-full flex-row items-center justify-center gap-5 px-4'>
           <Image
@@ -153,9 +194,9 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
           <h1 className='font-bold'>Padlan Personal Bot</h1>
           <span className='font-extralight text-xs text-gray-300'>v.0.9.0</span>
         </div>
-        <div ref={chatBox} className='flex h-full w-full flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-3 py-3 odd:justify-end'>
-          {conversation.map((chat: string, idx: number) => (
-            <ChatBuble key={idx} chat={chat} index={idx} isLoading={false} />
+        <div ref={chatBox} className='flex h-full w-full flex-col items-center justify-start overflow-y-auto overflow-x-hidden px-3 py-3'>
+          {conversation.map((msg, idx) => (
+            <ChatBuble key={idx} chat={msg.text} index={idx} isLoading={isAsking && !msg.isUser && idx === conversation.length - 1} isUser={msg.isUser} />
           ))}
         </div>
         <div className='mb-1 flex h-20 w-full items-center justify-center hover:cursor-text' onClick={() => inputChatBox.current?.focus()}>
@@ -183,7 +224,7 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = () => {
           </form>
         </div>
       </motion.div>
-    </>
+    </div>
   );
 };
 

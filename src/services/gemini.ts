@@ -2,16 +2,31 @@ import {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
+  GenerativeModel,
+  GenerateContentStreamResult,
+  GenerateContentResult,
+  Part,
 } from '@google/generative-ai';
+
+const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL_NAME || 'gemini-2.0-flash-exp';
+const API_KEY = process.env.NEXT_PUBLIC_GENAI_API_KEY || '';
+const DB_URL = `${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/gemini.json`; // Re-add DB_URL
 
 interface Config {
   parts: { input: string; output: string }[];
   api_key: string;
 }
 
-const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL_NAME || 'gemini-2.0-flash-exp';
-const API_KEY = process.env.NEXT_PUBLIC_GENAI_API_KEY || '';
-const DB_URL = `${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/gemini.json`;
+interface ChatHistoryItem {
+  role: 'user' | 'model';
+  parts: Part[];
+}
+
+async function getConfig(): Promise<Config> { // Re-add getConfig
+  const res = await fetch(DB_URL);
+  if (!res.ok) throw new Error('Failed to fetch data');
+  return res.json();
+}
 
 const generationConfig = {
   temperature: 0.05,
@@ -26,33 +41,22 @@ const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
 ];
 
-async function getConfig(): Promise<Config> {
-  const res = await fetch(DB_URL);
-  if (!res.ok) throw new Error('Failed to fetch data');
-  return res.json();
-}
-
-function formatParts(sourceParts: { input: string; output: string }[], feParts: string[], question: string) {
-  const preDefinedParts = sourceParts.flatMap(({ input, output }) => [
-    { text: `input: ${input}` },
-    { text: `output: ${output}` },
-  ]);
-
-  const extractedFeParts = feParts.map((text, idx) => ({
-    text: `${idx % 2 === 0 ? 'input' : 'output'}: ${text}`,
-  }));
-
-  return [...preDefinedParts, ...extractedFeParts, { text: `input: ${question}` }, { text: 'output: ' }];
-}
-
-async function generateResponse(question: string, feParts: string[]) {
-  const config = await getConfig();
+async function getGenerativeModel(): Promise<GenerativeModel> {
   const genAI = new GoogleGenerativeAI(API_KEY);
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-  const parts = formatParts(config.parts, feParts, question);
+  return genAI.getGenerativeModel({ model: MODEL_NAME });
+}
+
+async function generateResponse(
+  history: ChatHistoryItem[],
+  question: string,
+  systemInstruction?: string
+): Promise<string> {
+  const model = await getGenerativeModel();
+  const contents = [...history, { role: 'user', parts: [{ text: question }] }];
 
   const result = await model.generateContent({
-    contents: [{ role: 'user', parts }],
+    systemInstruction,
+    contents,
     generationConfig,
     safetySettings,
   });
@@ -60,24 +64,28 @@ async function generateResponse(question: string, feParts: string[]) {
   return result.response.candidates?.[0].content.parts[0].text || 'I worried I cannot answer that.';
 }
 
-async function generateResponseStream(question: string, feParts: string[]) {
-  const config = await getConfig();
-  const genAI = new GoogleGenerativeAI(API_KEY);
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-  const parts = formatParts(config.parts, feParts, question);
+async function generateResponseStream(
+  history: ChatHistoryItem[],
+  question: string,
+  systemInstruction?: string
+): Promise<GenerateContentStreamResult> {
+  const model = await getGenerativeModel();
+  const contents = [...history, { role: 'user', parts: [{ text: question }] }];
 
   return model.generateContentStream({
-    systemInstruction:"You are padlan personal assistant that can speak english or bahasa indonesia based on user input. Give your answer using markdown format. Answer user question based on the data, Always give a suggestion by giving 1 or 2 follow up question on the end of your answer to living the conversation. Also use emoticon to give a humble persona",
-    contents: [{ role: 'user', parts }],
+    systemInstruction,
+    contents,
     generationConfig,
     safetySettings,
   });
 }
 
 const geminiService = {
-  getConfig,
-  askGemini: (question: string, feParts: string[]) => generateResponse(question, feParts),
-  askGeminiStream: (question: string, feParts: string[]) => generateResponseStream(question, feParts),
+  getConfig, // Export getConfig
+  askGemini: (history: ChatHistoryItem[], question: string, systemInstruction?: string) =>
+    generateResponse(history, question, systemInstruction),
+  askGeminiStream: (history: ChatHistoryItem[], question: string, systemInstruction?: string) =>
+    generateResponseStream(history, question, systemInstruction),
 };
 
 export default geminiService;
