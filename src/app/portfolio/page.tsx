@@ -56,9 +56,12 @@ const PortfolioPage = () => {
         <motion.div variants={leftVariants} initial="start" animate="end" className='h-1/2 md:h-full md:w-1/2 relative flex justify-center py-12'>
           <Image
             src={'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2Fportfolio-banner.svg?alt=media&token=bff577d2-19af-4870-8c60-7fee72b731d6'}
-            width={480}
-            height={420}
-            alt='img'
+            width={600}
+            height={500}
+            alt='Portfolio banner illustration'
+            priority
+            className='w-full h-auto max-w-[600px] max-h-[500px] object-contain drop-shadow-lg'
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
           />
         </motion.div>
         <motion.div variants={rightVariants} initial="start" animate="end" className='h-1/2 md:h-full w-screen md:w-2/3 flex flex-col justify-start md:justify-center items-center py-10 md:pr-10 lg:mb-32'>

@@ -54,12 +54,14 @@ const ProjectCard: FC<ProjectCardProps> = ({ project }) => {
     };
 
     return (
-        <motion.div variants={fadeIn} initial="initial" whileInView={"ready"} viewport={{once:true}} className='bg-white even:bg-gray-100 w-full min-h-[480px] md:border-4 border-gray-300 md:rounded-3xl flex flex-col md:flex-row justify-between md:justify-around items-center p-10 md:p-5 gap-5 md:gap-0'>
-            <div className='min-h-[480px] w-full md:w-1/3 flex flex-col justify-start md:justify-center items-center gap-5'>
-                <p className='font-bold font-sans text-gray-700 text-3xl md:hidden relative'>{project.name}</p>
-                <Carousel assets={projectAssetsUrls} delay={5000}/>
+        <motion.div variants={fadeIn} initial="initial" whileInView={"ready"} viewport={{once:true}} className='bg-white even:bg-gray-100 w-full min-h-[480px] md:border-4 border-gray-300 md:rounded-3xl flex flex-col md:flex-row justify-between md:justify-around items-center p-10 md:p-5 gap-8 md:gap-6 shadow-lg hover:shadow-xl transition-shadow duration-300'>
+            <div className='min-h-[400px] w-full md:w-2/5 flex flex-col justify-start md:justify-center items-center gap-5'>
+                <p className='font-bold font-sans text-gray-700 text-3xl md:hidden relative text-center'>{project.name}</p>
+                <div className="w-full flex justify-center">
+                    <Carousel assets={projectAssetsUrls} delay={5000}/>
+                </div>
             </div>
-            <div className='h-full w-full md:w-2/3 md:px-7 flex flex-col justify-center items-center '>
+            <div className='h-full w-full md:w-3/5 md:px-7 flex flex-col justify-center items-center'>
                 <div className='w-full hidden md:flex'>
                     <p className='font-bold font-sans text-gray-700 text-3xl pb-2'>{project.name}</p>
                 </div>
@@ -72,7 +74,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project }) => {
                 <div className='w-full flex justify-start items-start text-center md:text-justify mb-10'>
                     <p className='font-mono'>{project.contribution} <ReadMore /></p>
                 </div>
-                <div className='w-full flex justify-center md:justify-start items-center text-center gap-2'>
+                <div className='w-full flex flex-wrap justify-center md:justify-start items-center gap-2 px-4 md:px-0'>
                     {
                         project.tags.map((t: string) => <Badge key={t} tag={t}/>)
                     }
