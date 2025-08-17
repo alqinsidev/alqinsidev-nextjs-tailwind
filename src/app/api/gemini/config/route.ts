@@ -17,10 +17,10 @@ export async function GET() {
       throw new Error('Failed to fetch data');
     }
     const config: Config = await res.json();
-    
+
     // Remove sensitive data before sending to client
-    const { api_key, ...safeConfig } = config;
-    
+    const { api_key: _api_key, ...safeConfig } = config;
+
     return NextResponse.json(safeConfig);
   } catch (error) {
     console.error('Config API error:', error);

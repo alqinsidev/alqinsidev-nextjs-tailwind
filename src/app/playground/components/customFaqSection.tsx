@@ -145,9 +145,13 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
       setChatConversation((prev) => [...prev, { text: '', isUser: false }]);
 
       try {
-        while (true) {
+        let reading = true;
+        while (reading) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            reading = false;
+            break;
+          }
           
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n');
@@ -156,6 +160,7 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
             if (line.startsWith('data: ')) {
               const data = line.slice(6);
               if (data === '[DONE]') {
+                reading = false;
                 break;
               }
               try {
@@ -170,7 +175,7 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
                     return [...prev, { text: streamedAnswer, isUser: false }];
                   });
                 }
-              } catch (parseError) {
+              } catch {
                 // Ignore parse errors for incomplete JSON
               }
             }

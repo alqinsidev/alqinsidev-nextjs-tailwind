@@ -10,11 +10,6 @@ import {
 const MODEL_NAME = process.env.GEMINI_MODEL_NAME || 'gemini-2.0-flash';
 const API_KEY = process.env.GENAI_API_KEY || '';
 
-interface ChatHistoryItem {
-  role: 'user' | 'model';
-  parts: Part[];
-}
-
 const generationConfig = {
   temperature: 0.05,
   topK: 1,
