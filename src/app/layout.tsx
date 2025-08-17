@@ -19,10 +19,10 @@ export const metadata: Metadata = {
   },
   description: "Padlan Alqinsi (alqinsidev) - Software Engineer specializing in scalable solutions, AI integration, and modern web applications. Let's turn your ideas into reality.",
   openGraph: {
-    title: 'Padlan Alqinsi - Software Engineer',
+    title: 'Padlan Alqinsi (alqinsidev) - Software Engineer',
     description: "Padlan Alqinsi (alqinsidev) - Software Engineer specializing in scalable solutions, AI integration, and modern web applications. Let's turn your ideas into reality.",
     url: 'https://alqinsidev.net',
-    siteName: 'Padlan Alqinsi',
+    siteName: 'Padlan Alqinsi (alqinsidev) - Software Engineer',
     images: [
       {
         url: 'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2FOG%20Image.png?alt=media&token=e7011339-58ed-48ef-82cc-8a4fc850ddb4',
