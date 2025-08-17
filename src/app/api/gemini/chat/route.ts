@@ -30,6 +30,11 @@ async function getGenerativeModel(): Promise<GenerativeModel> {
 
 export async function POST(request: NextRequest) {
   try {
+    // Add validation
+    if (!API_KEY) {
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+    }
+    
     const { history, question, systemInstruction } = await request.json();
 
     if (!question) {
