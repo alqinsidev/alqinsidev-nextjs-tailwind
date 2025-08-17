@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     template: '%s | Padlan Alqinsi',
     default: 'Padlan Alqinsi - Software Engineer',
   },
-  description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
+  description: "Padlan Alqinsi (alqinsidev) - Digital Transformation Engineer leveraging AI and modern software solutions to modernize businesses. Expert in process automation, system integration, and intelligent digital ecosystems.",
   openGraph: {
-    title: 'Padlan Alqinsi - Software Engineer',
-    description: "Padlan Alqinsi - Software Engineer | I'll Code Everything I need to Code 💻",
+    title: 'Padlan Alqinsi - Digital Transformation Engineer',
+    description: "Padlan Alqinsi (alqinsidev) - Digital Transformation Engineer leveraging AI and modern software solutions to modernize businesses. Expert in process automation, system integration, and intelligent digital ecosystems.",
     url: 'https://alqinsidev.net',
     siteName: 'Padlan Alqinsi',
     images: [
