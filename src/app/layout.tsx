@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'Padlan Alqinsi',
     images: [
       {
-        url: 'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2FOG%20Image.png?alt=media&token=https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2FOG%20Image.png?alt=media&token=0106b091-04e2-4a2b-9976-6066c3a5382e',
+        url: 'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2FOG%20Image.png?alt=media&token=e7011339-58ed-48ef-82cc-8a4fc850ddb4',
         width: 1200,
         height: 630,
         alt: 'Padlan Alqinsi OG Image',
