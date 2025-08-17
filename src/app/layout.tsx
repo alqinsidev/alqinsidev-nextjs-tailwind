@@ -14,18 +14,18 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   metadataBase: new URL('https://alqinsidev.net'),
   title: {
-    template: '%s | Padlan Alqinsi',
-    default: 'Padlan Alqinsi - Software Engineer',
+    template: '%s | Padlan Alqinsi (alqinsidev)',
+    default: 'Padlan Alqinsi (alqinsidev) - Software Engineer',
   },
-  description: "Padlan Alqinsi (alqinsidev) - Digital Transformation Engineer leveraging AI and modern software solutions to modernize businesses. Expert in process automation, system integration, and intelligent digital ecosystems.",
+  description: "Padlan Alqinsi (alqinsidev) - Software Engineer specializing in scalable solutions, AI integration, and modern web applications. Let's turn your ideas into reality.",
   openGraph: {
-    title: 'Padlan Alqinsi - Digital Transformation Engineer',
-    description: "Padlan Alqinsi (alqinsidev) - Digital Transformation Engineer leveraging AI and modern software solutions to modernize businesses. Expert in process automation, system integration, and intelligent digital ecosystems.",
+    title: 'Padlan Alqinsi - Software Engineer',
+    description: "Padlan Alqinsi (alqinsidev) - Software Engineer specializing in scalable solutions, AI integration, and modern web applications. Let's turn your ideas into reality.",
     url: 'https://alqinsidev.net',
     siteName: 'Padlan Alqinsi',
     images: [
       {
-        url: 'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2FOG%20Image.png?alt=media&token=13af7c42-4712-4fc2-a80e-2da6dba92ae8',
+        url: 'https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/alqinsidev-web%2Fassets%2Fstatic%2FOG%20Image.png?alt=media&token=https://firebasestorage.googleapis.com/v0/b/alqinsidev-project.appspot.com/o/static-assets%2FOG%20Image.png?alt=media&token=0106b091-04e2-4a2b-9976-6066c3a5382e',
         width: 1200,
         height: 630,
         alt: 'Padlan Alqinsi OG Image',
