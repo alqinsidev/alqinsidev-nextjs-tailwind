@@ -3,11 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import PersonalBotSection from './components/personalBotSection';
 import CustomFaqSection from './components/customFaqSection';
-import geminiService from '@/services/gemini';
+import geminiClient from '@/services/gemini-client';
 
 interface GeminiConfig {
   parts: { input: string; output: string }[];
-  api_key: string;
   system_prompts: {
     faq_section: string;
   };
@@ -21,7 +20,7 @@ const PlaygroundPage = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const config = await geminiService.getConfig();
+        const config = await geminiClient.getConfig();
         setGeminiConfig(config);
       } catch (err) {
         setError('Failed to load Gemini configuration.');
@@ -53,4 +52,4 @@ const PlaygroundPage = () => {
   );
 };
 
-export default PlaygroundPage
+export default PlaygroundPage;

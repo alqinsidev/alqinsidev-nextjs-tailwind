@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Modal from '@/components/modal'; // Import the new Modal component
-import ChatBuble from './chatBuble'; // Reusing ChatBuble
-import { FaArrowUp, FaTimes } from 'react-icons/fa'; // Reusing icon
-import geminiService from '@/services/gemini'; // Reusing gemini service
+import Modal from '@/components/modal';
+import ChatBuble from './chatBuble';
+import { FaArrowUp, FaTimes } from 'react-icons/fa';
+import geminiClient from '@/services/gemini-client';
 
 interface FaqItem {
   question: string;
@@ -18,7 +18,6 @@ interface ChatMessage {
 
 interface GeminiConfig {
   parts: { input: string; output: string }[];
-  api_key: string;
   system_prompts: {
     faq_section: string;
   };
@@ -36,12 +35,12 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newQuestion, setNewQuestion] = useState('');
   const [newAnswer, setNewAnswer] = useState('');
-  const [faqError, setFaqError] = useState(''); // New state for FAQ limit error
+  const [faqError, setFaqError] = useState('');
 
   const [chatConversation, setChatConversation] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isChatAsking, setIsChatAsking] = useState(false);
-  const [showBanner, setShowBanner] = useState(false); // New state for contextual banner
+  const [showBanner, setShowBanner] = useState(false);
   const [faqSystemPrompt, setFaqSystemPrompt] = useState('');
 
   useEffect(() => {
@@ -51,7 +50,6 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
         setFaqs(JSON.parse(storedFaqs));
       }
 
-      // Check if the banner has been dismissed
       const hasDismissedBanner = localStorage.getItem('hasDismissedFaqBanner');
       if (!hasDismissedBanner) {
         setShowBanner(true);
@@ -78,7 +76,7 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
   }, [geminiConfig]);
 
   const handleAddFaq = () => {
-    setFaqError(''); // Clear previous errors
+    setFaqError('');
     if (faqs.length >= 3) {
       setFaqError('You can only add a maximum of 3 FAQ pairs.');
       return;
@@ -88,7 +86,7 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
       setFaqs([...faqs, { question: newQuestion, answer: newAnswer }]);
       setNewQuestion('');
       setNewAnswer('');
-      setIsModalOpen(false); // Close modal after adding
+      setIsModalOpen(false);
     }
   };
 
@@ -129,34 +127,57 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
         parts: [{ text: msg.text }],
       })) as { role: 'user' | 'model'; parts: { text: string }[] }[];
 
-
-      // Combine formatted FAQs, and current chat history
+      // Combine formatted FAQs and current chat history
       const fullChatHistory = [...formattedFaqs, ...currentChatHistory];
 
-      // Define a system instruction for the FAQ bot
       const FAQ_BOT_SYSTEM_INSTRUCTION = faqSystemPrompt;
 
-      const answerStream = (await geminiService.askGeminiStream(
+      const responseStream = await geminiClient.askGeminiStream(
         fullChatHistory,
-        userQuestion, // The actual user question
+        userQuestion,
         FAQ_BOT_SYSTEM_INSTRUCTION
-      )).stream;
+      );
+      
       let streamedAnswer = '';
+      const reader = responseStream.getReader();
+      const decoder = new TextDecoder();
 
-      setChatConversation((prev) => [...prev, { text: '', isUser: false }]); // Placeholder for streamed answer
+      setChatConversation((prev) => [...prev, { text: '', isUser: false }]);
 
-      for await (const chunk of answerStream) {
-        const message = chunk.candidates?.[0].content.parts[0].text;
-        if (message) {
-          streamedAnswer += message;
-          setChatConversation((prev) => {
-            const lastMessage = prev[prev.length - 1];
-            if (!lastMessage.isUser) {
-              return [...prev.slice(0, -1), { text: streamedAnswer, isUser: false }];
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') {
+                break;
+              }
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.text) {
+                  streamedAnswer += parsed.text;
+                  setChatConversation((prev) => {
+                    const lastMessage = prev[prev.length - 1];
+                    if (!lastMessage.isUser) {
+                      return [...prev.slice(0, -1), { text: streamedAnswer, isUser: false }];
+                    }
+                    return [...prev, { text: streamedAnswer, isUser: false }];
+                  });
+                }
+              } catch (parseError) {
+                // Ignore parse errors for incomplete JSON
+              }
             }
-            return [...prev, { text: streamedAnswer, isUser: false }];
-          });
+          }
         }
+      } finally {
+        reader.releaseLock();
       }
     } catch (error) {
       setChatConversation((prev) => [...prev, { text: 'Something went wrong while fetching the answer.', isUser: false }]);
@@ -204,21 +225,23 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
           </div>
           <div className="mb-1 flex h-20 w-full items-center justify-center hover:cursor-text" onClick={() => inputChatBoxRef.current?.focus()}>
             <form
-              className="h-15 mx-2 flex w-full items-center justify-between gap-5 rounded-3xl border border-gray-300 bg-white px-3 py-2 shadow-md"
-              onSubmit={(e) => { e.preventDefault(); handleChatSubmit(); }}
+              className="h-15 mx-2 flex w-full items-center justify-between gap-5 rounded-3xl border border-gray-700 bg-white px-3 py-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleChatSubmit();
+              }}
             >
               <textarea
                 ref={inputChatBoxRef}
-                className="h-full w-full resize-none text-sm focus:outline-none text-gray-700"
-                placeholder={isChatAsking ? "Thinking..." : "Ask a question about your FAQs..."}
-                name="chatInput"
+                className="h-full w-full resize-none text-sm focus:outline-none"
+                placeholder={isChatAsking ? "Looking for the answer" : "Ask about your custom FAQs..."}
                 onChange={handleChatInputChange}
                 onKeyPress={handleChatKeyPress}
                 value={chatInput}
                 rows={1}
               />
               <button
-                className="rounded-full bg-sky-400 p-3 text-white hover:bg-sky-500 active:bg-blue-800 disabled:bg-gray-300 shadow-md"
+                className="rounded-full bg-sky-400 p-3 text-white hover:bg-sky-500 active:bg-gray-300 disabled:bg-gray-300"
                 type="submit"
                 disabled={isChatAsking || chatInput.length === 0}
               >
@@ -228,86 +251,95 @@ const CustomFaqSection: React.FC<CustomFaqSectionProps> = ({ geminiConfig }) => 
           </div>
         </div>
 
-        {/* FAQ List and Add Button (Sidebar) */}
-        <div className="w-full lg:w-1/4 flex flex-col">
-          <div className="max-w-2xl mx-auto text-center mb-8">
-            <h2 className="text-2xl font-bold leading-tight text-gray-700 sm:text-3xl">
-              Empower Your AI: Build Your Custom FAQ Knowledge Base
-            </h2>
-            <p className="max-w-xl mx-auto mt-4 text-base leading-7 text-gray-600">
-              Create a personalized knowledge base for your AI. Add questions and answers that your bot can learn from and respond to instantly.
-            </p>
-            <div className="relative inline-block group">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className={`mt-6 px-6 py-3 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg transition-shadow duration-200 ${faqs.length >= 3 ? 'bg-gray-400 cursor-not-allowed' : 'bg-sky-400 hover:bg-sky-500'}`}
-                disabled={faqs.length >= 3}
-              >
-                Add New FAQ
-              </button>
-              {faqs.length >= 3 && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-max px-3 py-2 text-sm font-medium text-white bg-gray-700 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                  Maximum 3 FAQ pairs reached. Delete existing FAQs to add more.
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-gray-700"></div>
-                </div>
-              )}
-            </div>
+        {/* FAQ Management Sidebar */}
+        <div className="w-full lg:w-1/4 space-y-6">
+          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Manage FAQs</h2>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full bg-sky-500 text-white py-2 px-4 rounded-lg hover:bg-sky-600 transition-colors duration-200 font-medium"
+            >
+              Add New FAQ
+            </button>
+            {faqError && (
+              <p className="text-red-500 text-sm mt-2">{faqError}</p>
+            )}
           </div>
 
-          <div className="max-w-3xl mx-auto space-y-2 overflow-y-auto lg:h-80"> 
-            {(
-              faqs.map((faq, index) => (
-                <div key={index} className="p-4 bg-white border-2 border-gray-300 rounded-xl shadow-sm even:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-md font-semibold text-gray-700">{faq.question}</h3>
-                    <button
-                      className='ml-2'
-                      onClick={() => handleDeleteFaq(index)}
-                    >
-                      <FaTimes className="text-gray-400 hover:text-red-400" />
-                    </button>
+          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Current FAQs ({faqs.length}/3)</h3>
+            {faqs.length === 0 ? (
+              <p className="text-gray-500 text-sm">No FAQs added yet. Click "Add New FAQ" to get started!</p>
+            ) : (
+              <div className="space-y-3">
+                {faqs.map((faq, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-medium text-gray-800 text-sm">Q: {faq.question}</h4>
+                      <button
+                        onClick={() => handleDeleteFaq(index)}
+                        className="text-red-500 hover:text-red-700 ml-2 flex-shrink-0"
+                        aria-label="Delete FAQ"
+                      >
+                        <FaTimes className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <p className="text-gray-600 text-xs">A: {faq.answer.substring(0, 100)}{faq.answer.length > 100 ? '...' : ''}</p>
                   </div>
-                  <p className="mt-1 text-sm text-gray-700">{faq.answer}</p>
-                </div>
-              ))
+                ))}
+              </div>
             )}
           </div>
         </div>
       </div>
 
       {/* Modal for adding new FAQ */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New FAQ" onSubmit={handleAddFaq}>
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Enter your question"
-            value={newQuestion}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewQuestion(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && newQuestion.trim() && newAnswer.trim()) {
-                handleAddFaq();
-              }
-            }}
-            required
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 shadow-sm"
-          />
-          <input
-            type="text"
-            placeholder="Enter your answer"
-            value={newAnswer}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewAnswer(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && newQuestion.trim() && newAnswer.trim()) {
-                handleAddFaq();
-              }
-            }}
-            required
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 shadow-sm"
-          />
-          {faqError && <p className="text-red-500 text-sm">{faqError}</p>} {/* Display error message */}
-          <button onClick={handleAddFaq} className="w-full px-4 py-2 text-white bg-sky-400 rounded-md hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg transition-shadow duration-200">
-            Add FAQ
-          </button>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className="p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Add New FAQ</h2>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-1">
+                Question
+              </label>
+              <textarea
+                id="question"
+                value={newQuestion}
+                onChange={(e) => setNewQuestion(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                rows={2}
+                placeholder="Enter your question here..."
+              />
+            </div>
+            <div>
+              <label htmlFor="answer" className="block text-sm font-medium text-gray-700 mb-1">
+                Answer
+              </label>
+              <textarea
+                id="answer"
+                value={newAnswer}
+                onChange={(e) => setNewAnswer(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent resize-none"
+                rows={4}
+                placeholder="Enter the answer here..."
+              />
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3 mt-6">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAddFaq}
+              disabled={!newQuestion.trim() || !newAnswer.trim()}
+              className="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200"
+            >
+              Add FAQ
+            </button>
+          </div>
         </div>
       </Modal>
     </section>

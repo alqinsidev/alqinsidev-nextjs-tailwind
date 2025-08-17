@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import ChatBuble from './chatBuble';
 import { FaArrowUp } from 'react-icons/fa';
 import Image from 'next/image';
-import geminiService from '@/services/gemini';
+import geminiClient from '@/services/gemini-client';
 import { sendGTMEvent } from '@next/third-parties/google';
 
 interface QuestionForm {
@@ -13,7 +13,6 @@ interface QuestionForm {
 
 interface GeminiConfig {
   parts: { input: string; output: string }[];
-  api_key: string;
   system_prompts: {
     faq_section: string;
   };
@@ -95,9 +94,7 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = ({ geminiConfig })
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && !isAsking) {
-
       e.preventDefault();
-
       handleSubmit(e);
     }
   };
@@ -121,36 +118,60 @@ const PersonalBotSection: React.FC<PersonalBotSectionProps> = ({ geminiConfig })
     const fullChatHistory = [...preloadedHistory, ...currentChatHistoryForGemini];
   
     try {
-      const answerStream = (await geminiService.askGeminiStream(
+      const responseStream = await geminiClient.askGeminiStream(
         fullChatHistory,
         userQuestion,
         PERSONAL_BOT_SYSTEM_INSTRUCTION
-      )).stream;
+      );
+      
       let streamedAnswer = '';
+      const reader = responseStream.getReader();
+      const decoder = new TextDecoder();
   
       // Append an empty message for the answer
       setConversation((prev) => [...prev, { text: '', isUser: false }]);
   
-      for await (const chunk of answerStream) {
-        const message = chunk.candidates?.[0].content.parts[0].text;
-        if (message) {
-          streamedAnswer += message;
-          setConversation((prev) => {
-            const lastMessage = prev[prev.length - 1];
-            if (lastMessage && !lastMessage.isUser) { // Ensure it's the bot's last message
-              return [...prev.slice(0, -1), { text: streamedAnswer, isUser: false }];
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') {
+                break;
+              }
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.text) {
+                  streamedAnswer += parsed.text;
+                  setConversation((prev) => {
+                    const lastMessage = prev[prev.length - 1];
+                    if (lastMessage && !lastMessage.isUser) {
+                      return [...prev.slice(0, -1), { text: streamedAnswer, isUser: false }];
+                    }
+                    return [...prev, { text: streamedAnswer, isUser: false }];
+                  });
+                }
+              } catch (parseError) {
+                // Ignore parse errors for incomplete JSON
+              }
             }
-            // This case should ideally not be hit if the placeholder is always added first
-            return [...prev, { text: streamedAnswer, isUser: false }];
-          });
+          }
         }
+      } finally {
+        reader.releaseLock();
       }
   
-      // Update parts and chatHistory for next turn
+      // Update parts for next turn
       setParts((prev) => [...prev, userQuestion, streamedAnswer]);
     } catch (error) {
       eventSuccess = false;
-      setConversation((prev) => [...prev, { text: 'Something went wrong', isUser: false }]); // Ensure it's a ChatMessage object
+      setConversation((prev) => [...prev, { text: 'Something went wrong', isUser: false }]);
       console.error(error);
     } finally {
       sendGTMEvent({
