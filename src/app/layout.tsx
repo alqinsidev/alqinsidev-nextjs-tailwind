@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const cfBeaconToken = process.env.CF_BEACON_TOKEN;
+const cfBeaconToken = process.env.NEXT_PUBLIC_CF_BEACON_TOKEN;
 
 export default function RootLayout({
   children,
@@ -44,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <GoogleTagManager gtmId={process.env.GA_ID || ""}/>
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GA_ID || ""}/>
       <head>
         <meta name="google-site-verification" content="xj216UYIB7vh92OXrvro-OBv-R6X13ju5xw87JhdTiM" />
         <link rel="canonical" href="https://alqinsidev.net/" />
