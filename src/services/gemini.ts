@@ -7,9 +7,9 @@ import {
   Part,
 } from '@google/generative-ai';
 
-const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL_NAME || 'gemini-2.0-flash-exp';
-const API_KEY = process.env.NEXT_PUBLIC_GENAI_API_KEY || '';
-const DB_URL = `${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/gemini.json`; // Re-add DB_URL
+const MODEL_NAME = process.env.GEMINI_MODEL_NAME || 'gemini-2.0-flash-exp';
+const API_KEY = process.env.GENAI_API_KEY || '';
+const DB_URL = `${process.env.REALTIME_DB_URL}/gemini.json`; // Re-add DB_URL
 
 interface Config {
   parts: { input: string; output: string }[];

@@ -42,7 +42,7 @@ const PortfolioPage = () => {
 
 
   async function getData() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_REALTIME_DB_URL}/portfolio.json`)
+    const res = await fetch(`${process.env.REALTIME_DB_URL}/portfolio.json`)
     if (!res.ok) {
       throw new Error('Failed to fetch data')
     }
