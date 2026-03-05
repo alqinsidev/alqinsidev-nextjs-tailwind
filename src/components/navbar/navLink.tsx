@@ -11,6 +11,7 @@ const NavLink = ({ link }: { link: UrlLink }) => {
     <Link
       className={`rounded p-2 hover:bg-sky-300 hover:text-white ${activeUrl === link.url ? 'bg-gray-700 text-white' : 'text-gray-700'} font-sans text-[1.6rem] font-bold`}
       href={link.url}
+      target={link.target}
     >
       {link.label}
     </Link>

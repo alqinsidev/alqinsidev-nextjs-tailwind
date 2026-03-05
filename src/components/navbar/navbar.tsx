@@ -8,28 +8,29 @@ import { motion } from 'framer-motion'
 export interface UrlLink {
   url: string
   label: string
+  target?: string
 }
 
 const url = [
   { url: '/', label: 'Home' },
   { url: '/about', label: 'About' },
   { url: '/portfolio', label: 'Portfolio' },
-  { url: '/playground', label: 'Playground' },
+  { url: 'https://mavis.alqinsidev.net', label: 'MAVIS AI', target: '_blank' },
 ]
 const Navbar = () => {
   const [open, setOpen] = useState(false)
   const [logoHovered, setLogoHovered] = useState(false)
-  
+
   const containerVariants = {
     start: {
-      opacity:0,
-      y:-5
+      opacity: 0,
+      y: -5
     },
     end: {
-      opacity:1,
-      y:0,
-      transition:{
-        duration:.5
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: .5
       }
     }
   }
@@ -162,7 +163,9 @@ const Navbar = () => {
                 key={link.label}
                 onClick={() => setOpen(false)}
               >
-                <Link href={link.url}>{link.label}</Link>
+                <Link href={link.url} target={link.target}>
+                  {link.label}
+                </Link>
               </motion.div>
             ))}
           </motion.div>

@@ -24,6 +24,15 @@ const nextConfig = {
         port: '',
       },
     ],
+    dangerouslyAllowLocalIP: true,
+  },
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
   webpack(config) {
     // Grab the existing rule that handles SVG imports
